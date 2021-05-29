@@ -1,0 +1,46 @@
+# SBT
+**/target/
+.history
+.sbtopts
+
+# MacOS
+.DS_Store
+
+.idea
+.idea_*
+.idea/*
+**/.idea/*
+**/.cache
+**/.classpath
+**/.project
+**/.settings/*
+**/bin
+**/logs/*
+**/.idea_modules/*
+output.log
+
+# generated node js stuff
+**/node_modules
+
+#Akka persistence
+**/journal
+
+# s3files
+s3files/
+
+# IDEA UML file
+*.uml
+*.iml
+projectFilesBackup*
+
+# other
+**.log
+**.tar.gz
+**.tgz
+**.bz2
+**.diff
+**.pdf
+**.dump
+**.tar
+**.sc
+**.dylib
