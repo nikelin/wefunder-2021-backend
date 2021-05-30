@@ -25,7 +25,7 @@ sbt  universal:packageBin
 
 The resulting artifact will be located at:
 ```
-$root/target/wefunder-assignment-backend-0.1.zip
+$root/target/wefunder-pitchdeck-backend-0.1.zip
 ```
 
 ## Run
@@ -35,7 +35,7 @@ There are two options to test application: to start it from the binary distribut
 1. **Option 1** - Start from the binary package (see **Build**)
 
     ```
-    $pathToServerDist/bin/wefunder-assignment-backend
+    $pathToServerDist/bin/wefunder-pitchdeck-backend
     ```
 
 2. **Option 2** - Run from the source code
@@ -57,7 +57,7 @@ each the path to each renderer's storage to make sure that they are able to stor
 The application can be configured either by changing its configuration file available at `src/main/resources/application.conf`,
 or at `./conf/application.conf` in case of a binary distributive.
 
-It is possible to override the application configuration via environment variables, i.e. `APP_HOST=8081 ./bin/wefunder-assignment-backend`. 
+It is possible to override the application configuration via environment variables, i.e. `APP_HOST=8081 ./bin/wefunder-pitchdeck-backend`. 
 
 Down below is the list of all environment variables supported by the application grouped by the target component: 
 * HTTP

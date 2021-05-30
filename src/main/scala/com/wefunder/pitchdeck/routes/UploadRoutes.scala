@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.LazyLogging
 import com.wefunder.pitchdeck.db.DbService
 import com.wefunder.pitchdeck.domain.{ Id, Presentation, PresentationPage }
 import com.wefunder.pitchdeck.services.DocumentServices
-import org.http4s.{ EntityDecoder, HttpRoutes }
+import org.http4s.{ EntityDecoder, HttpRoutes, Response }
 import org.http4s.dsl.Http4sDsl
 import org.http4s.multipart.Multipart
 import org.http4s.circe._
@@ -53,7 +53,7 @@ object UploadRoutes extends LazyLogging {
       tx: Transactor[F],
       lh: LogHandler
   ): HttpRoutes[F] = {
-    object dsl extends Http4sDsl[F];
+    object dsl extends Http4sDsl[F]
     import dsl._
 
     HttpRoutes.of[F] {
@@ -112,13 +112,25 @@ object UploadRoutes extends LazyLogging {
                                                      }.sequence
                                       } yield presentation
 
-                                      dbio.transact(tx).flatMap { presentationId =>
-                                        Ok(presentationId.asJson)
-                                      }
+                                      dbio
+                                        .transact(tx)
+                                        .attempt
+                                        .flatMap {
+                                          case Right(presentationId) =>
+                                            Ok(presentationId.asJson)
+                                          case Left(error)           =>
+                                            Async[F]
+                                              .delay(
+                                                logger.error("Failed to persist the extraction results", error)
+                                              )
+                                              .map(_ => Response[F](status = InternalServerError))
+                                        }
                                     case Left(error)  =>
-                                      Async[F].delay(
-                                        logger.error("Extraction failed", error)
-                                      ) >> InternalServerError("500")
+                                      Async[F]
+                                        .delay(
+                                          logger.error("Extraction failed", error)
+                                        )
+                                        .map(_ => Response[F](status = InternalServerError))
                                   }
                                 case Left(message)  =>
                                   BadRequest(message)

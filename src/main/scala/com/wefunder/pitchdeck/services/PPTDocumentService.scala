@@ -42,39 +42,27 @@ class PPTDocumentService(override val config: RendererConfig) extends AbstractDo
           .emits[F, Int](0 until doc.getSlides.size())
           .parEvalMapUnordered(config.parallelismLevel) { pageNum =>
             Async[F].delay {
-              val img      = new BufferedImage(doc.getPageSize.width, doc.getPageSize.height, BufferedImage.TYPE_INT_RGB);
-              val graphics = img.createGraphics();
+              val img      = new BufferedImage(doc.getPageSize.width, doc.getPageSize.height, BufferedImage.TYPE_INT_RGB)
+              val graphics = img.createGraphics()
 
-              graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-              graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-              graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+              graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+              graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+              graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
               graphics.setRenderingHint(
                 RenderingHints.KEY_FRACTIONALMETRICS,
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON
-              );
+              )
 
-              graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-              graphics.setRenderingHint(RenderingHints.KEY_TEXT_LCD_CONTRAST, 150);
+              graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+              graphics.setRenderingHint(RenderingHints.KEY_TEXT_LCD_CONTRAST, 150)
 
-              //clear the drawing area
-              graphics.setPaint(Color.white);
-              graphics.fill(new Rectangle2D.Float(0, 0, doc.getPageSize.width, doc.getPageSize.height));
+              graphics.setPaint(Color.white)
+              graphics.fill(new Rectangle2D.Float(0, 0, doc.getPageSize.width, doc.getPageSize.height))
 
               doc.getSlides.get(pageNum).draw(graphics)
 
               (pageNum, img)
             }
-          }
-          .attempt
-          .evalMap {
-            case Left(error)   =>
-              Async[F]
-                .delay(logger.error(s"Unable to convert a PPT presentation page", error))
-                .map(_ => Option.empty[(Int, BufferedImage)])
-            case Right(result) => Async[F].delay(Option.apply[(Int, BufferedImage)](result))
-          }
-          .collect {
-            case Some(item) => item
           }
           .evalMap {
             case (pageNum, image) =>

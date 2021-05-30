@@ -2,14 +2,17 @@ import sbt._
 import sbt.Keys._
 
 name := "wefunder-pitchdeck-backend"
-
+maintainer := "Cyril Karpenko <cyril@nikelin.ru>"
 version := "0.1"
 
 scalaVersion := "2.13.4"
 
 Test / fork := true
 
-enablePlugins(JavaAppPackaging)
+mappings in Universal +=
+  baseDirectory.value / "src" / "main" / "resources" / "application.conf" -> "conf/application.conf"
+
+enablePlugins(JavaServerAppPackaging, LauncherJarPlugin)
 
 libraryDependencies += "co.fs2" %% "fs2-core" % Versions.fs2Version
 libraryDependencies += "co.fs2" %% "fs2-io"   % Versions.fs2Version
