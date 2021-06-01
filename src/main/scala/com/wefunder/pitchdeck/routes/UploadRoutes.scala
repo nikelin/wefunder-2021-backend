@@ -139,7 +139,10 @@ object UploadRoutes extends LazyLogging {
                         }
                     }
 
-                  stream.compile.drain.flatMap(_ => Ok("200"))
+                  stream.compile.last.map {
+                    case Some(response) => response
+                    case None           => Response[F](status = InternalServerError)
+                  }
                 case None                        =>
                   BadRequest("metadata and/or binary part of the request are missing")
               }
