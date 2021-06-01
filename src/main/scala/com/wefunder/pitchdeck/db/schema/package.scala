@@ -13,6 +13,7 @@ package object schema {
           title text not null,
           author text not null,
           description text not null,
+          created_at timestamp not null,
           primary key (id)
         );
     """

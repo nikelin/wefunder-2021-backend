@@ -42,7 +42,9 @@ package object domain {
     implicit val codec: Codec[Presentation] = deriveConfiguredCodec[Presentation]
   }
 
-  case class Presentation(title: String, author: String, description: String) extends Entity with Embedded
+  case class Presentation(title: String, author: String, description: String, createdAt: LocalDateTime)
+      extends Entity
+      with Embedded
 
   object Record {
     implicit def encodeResult[T <: Entity](implicit encoder: Encoder[T]): Encoder[Record[T]] =
@@ -54,16 +56,5 @@ package object domain {
   }
 
   case class Record[E <: Entity](id: Id[E], entity: E)
-
-  object Paginated {
-    implicit def encodeResult[T <: Entity](implicit encoder: Encoder[T]): Encoder[Paginated[T]] =
-      (value: Paginated[T]) =>
-        Json.obj(
-          "total"  -> Json.fromLong(value.total),
-          "entity" -> Json.fromValues(value.records.map(v => Record.encodeResult(encoder)(v)))
-        )
-  }
-
-  case class Paginated[E <: Entity](total: Int, records: Seq[Record[E]])
 
 }

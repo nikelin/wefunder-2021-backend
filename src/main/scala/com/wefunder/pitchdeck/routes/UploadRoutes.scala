@@ -92,24 +92,28 @@ object UploadRoutes extends LazyLogging {
                                   convertedPages.flatMap {
                                     case Right(pages) =>
                                       val dbio = for {
-                                        presentation <-
-                                          dbService.createPresentation(
-                                            Presentation(metadata.title, metadata.author, metadata.description)
-                                          )
-                                        resources    <- pages.map { page =>
-                                                       dbService
-                                                         .createPresentationPage(
-                                                           PresentationPage(
-                                                             page.pageNum,
-                                                             presentation.id,
-                                                             filename,
-                                                             page.path.toString,
-                                                             page.size,
-                                                             LocalDateTime.now
-                                                           )
-                                                         )
-                                                         .map(res => (res, page))
-                                                     }.sequence
+                                        presentation <- dbService.createPresentation(
+                                                          Presentation(
+                                                            metadata.title,
+                                                            metadata.author,
+                                                            metadata.description,
+                                                            LocalDateTime.now
+                                                          )
+                                                        )
+                                        _            <- pages.map { page =>
+                                               dbService
+                                                 .createPresentationPage(
+                                                   PresentationPage(
+                                                     page.pageNum,
+                                                     presentation.id,
+                                                     filename,
+                                                     page.path.toString,
+                                                     page.size,
+                                                     LocalDateTime.now
+                                                   )
+                                                 )
+                                                 .map(res => (res, page))
+                                             }.sequence
                                       } yield presentation
 
                                       dbio

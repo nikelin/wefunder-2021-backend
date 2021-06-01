@@ -19,7 +19,8 @@ object Tables {
       _.id.value           -> "id",
       _.entity.title       -> "title",
       _.entity.author      -> "author",
-      _.entity.description -> "description"
+      _.entity.description -> "description",
+      _.entity.createdAt   -> "created_at"
     )
 
   implicit val presentationPageInsertMeta =
